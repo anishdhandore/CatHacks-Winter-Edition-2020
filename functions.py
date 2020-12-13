@@ -79,4 +79,4 @@ def scanWebsite(userUrl):
         print('\n"status": "Created New Entry in Database" \n')
         pprint(urlObject)
 
-        return retrieve_data_from_db(url)
+    return retrieve_data_from_db(url)
