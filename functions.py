@@ -2,12 +2,17 @@ import pymongo
 from keys import *
 from pymongo import MongoClient
 from webscraper import *
+from pprint import pprint
 
 
 db = cluster["test"]
 collection = db["test"]
 
-
+'''
+This function checks if a URL is already added to the Database
+Returns True if URL is in Database
+Returns False if URL is not in Database
+'''
 def check_url_in_db(url):
     title = ""
     results = collection.find({"_id":url})
@@ -18,7 +23,9 @@ def check_url_in_db(url):
     else:
         return False
 
-
+'''
+This function adds a URL to the database along with other information
+'''
 def add_url_to_db(urlObject):
     index = {
         '_id': urlObject['_id'],
@@ -27,6 +34,11 @@ def add_url_to_db(urlObject):
     }
     collection.insert_one(index)
 
+
+'''
+This function creates a new object and returns data from the database by accessing it
+through the URL given
+'''
 def retrieve_data_from_db(url):
     urlObject = {
         'url': "",
@@ -40,12 +52,18 @@ def retrieve_data_from_db(url):
         urlObject['num_of_bad_words'] = result['num_of_bad_words']
     return  urlObject
 
+
+'''
+This function combines all the functions in functions.py and webscraper.py
+Main function that will be used on the desktop
+'''
 def scanWebsite(userUrl):
     url = userUrl
     condition = check_url_in_db(url)
     if(condition == True):
-        print(' "status": "Already Added to Database"')
+        print('\n "status": "Already Added to Database"\n')
         urlObject = retrieve_data_from_db(url)
+        pprint(urlObject)
         return urlObject
     else:
         urlObject = {
@@ -58,5 +76,7 @@ def scanWebsite(userUrl):
         num_of_bad_words = getNumOfBadWords(url)
         urlObject['num_of_bad_words'] = num_of_bad_words
         add_url_to_db(urlObject)
-        print('"status": "Created New Entry in Database"')
+        print('\n"status": "Created New Entry in Database" \n')
+        pprint(urlObject)
+
         return retrieve_data_from_db(url)
